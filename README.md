@@ -133,3 +133,34 @@ docker run -d \
   --name screenshot-service \
   screenshot-api
 ```
+
+## TODO
+
+Screenshot Configuration Options:
+
+1. Basic Settings:
+- [ ] URL input for specifying the web page to capture
+- [ ] Device selection (desktop, phone, tablet) for device-specific screenshots
+- [ ] Dimension control with width x height format (default 1024x768) and a full-length screenshot option
+- [ ] Format selection between jpg, png, and gif
+
+2. Cache Management:
+- [ ] Cache limit setting in days (default 14 days)
+- [ ] Option to force "Always fresh screenshot"
+- [ ] Delay timer ranging from 0 to 10000ms for handling animations and lazy loading
+
+3. Visual Quality and Display:
+- [ ] Zoom level control for high-resolution captures, with support for retina-like screenshots (200+ recommended)
+- [ ] Dimension control for specifying screenshot size
+- [ ] Crop functionality using x,y,width,height coordinates
+
+4. Element and Content Control:
+- [ ] Click functionality to interact with elements before capture (using CSS selectors)
+- [ ] Hide option to remove specific elements from the screenshot
+- [ ] Selector parameter to capture specific DOM elements
+- [ ] Crop parameter for capturing selected regions
+
+5. Request Header Customization:
+- [ ] Cookie management for setting Cookie request headers
+- [ ] Accept-Language header configuration
+- [ ] User-Agent header customization
