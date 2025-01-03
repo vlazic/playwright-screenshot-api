@@ -13,7 +13,9 @@
     "test:api:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "test:api:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "test:manual:visual": "bats tests/visual/screenshot.bats",
-    "test:manual:cache": "bash tests/manual/cache-test.sh"
+    "test:manual:cache": "bash tests/manual/cache-test.sh",
+    "release": "bash release.sh",
+    "release:as": "bash release.sh"
   },
   "dependencies": {
     "express": "^4.21.2",
