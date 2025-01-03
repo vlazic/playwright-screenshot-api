@@ -69,7 +69,7 @@ Request body:
   "url": "https://example.com",    // Required: URL to screenshot
   "returnUrl": false,              // Optional: Return URL instead of binary (default: false)
   "ttl": 3600,                     // Optional: Cache TTL in seconds (default: 3600)
-  "waitTime": 1000                 // Optional: Extra wait time in milliseconds before taking screenshot (default: 0)
+  "waitTime": 1000                 // Optional: Extra wait time in milliseconds before taking screenshot (default: 0, max: 10000)
 }
 ```
 
@@ -140,7 +140,7 @@ docker run -d \
 Screenshot Configuration Options:
 
 1. Basic Settings:
-- [ ] URL input for specifying the web page to capture
+- [x] URL input for specifying the web page to capture
 - [ ] Device selection (desktop, phone, tablet) for device-specific screenshots
 - [ ] Dimension control with width x height format (default 1024x768) and a full-length screenshot option
 - [ ] Format selection between jpg, png, and gif
@@ -164,4 +164,4 @@ Screenshot Configuration Options:
 5. Request Header Customization:
 - [ ] Cookie management for setting Cookie request headers
 - [ ] Accept-Language header configuration
-- [ ] User-Agent header customization
+- [x] User-Agent header customization (default provided, custom not yet supported)
