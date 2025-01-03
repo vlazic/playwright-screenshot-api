@@ -1,167 +1,129 @@
 # Playwright Page Screenshot Docker
 
-A simple API service that takes screenshots of web pages using Playwright, packaged in a Docker container. Features caching with configurable TTL and option to return URLs instead of binary data.
+A service for capturing website screenshots with various options, built with Node.js, Express, and Playwright.
 
-## Requirements
+## Features
 
-- Docker
+- Device emulation (desktop, tablet, phone)
+- Custom dimensions and full-page screenshots
+- Multiple formats (PNG, JPEG, GIF)
+- Cache management with TTL
+- Element interaction (click, hide)
+- Crop functionality
+- Custom request headers
 
-## Running with Docker Compose
-
-```bash
-docker compose up -d
-```
-
-This will build the image and start the service with all necessary configurations.
-
-To stop the service:
-```bash
-docker compose down
-```
-
-## Running with Docker (Alternative)
+## Installation
 
 ```bash
-docker build -t screenshot-api .
-docker run -d \
-  -p 3000:3000 \
-  -v screenshot-cache:/app/cache \
-  --name screenshot-service \
-  screenshot-api
+npm install
 ```
-
-Note: The container uses a named volume `screenshot-cache` for persistent cache storage.
 
 ## Usage
 
-### Basic Screenshot
-
-Send a POST request to `http://localhost:3000/screenshot` with a JSON body containing the URL you want to screenshot:
+Start the server:
 
 ```bash
-curl -X POST \
-  http://localhost:3000/screenshot \
-  -H 'Content-Type: application/json' \
-  -d '{"url": "https://example.com"}' \
-  --output screenshot.png
+npm start
 ```
 
-### Using Cache with URL Return
+Development mode with auto-reload:
 
 ```bash
-curl -X POST \
-  http://localhost:3000/screenshot \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "url": "https://example.com",
-    "returnUrl": true,
-    "ttl": 3600
-  }'
+npm run dev
 ```
 
-### API Endpoints
+## API
 
-#### POST /screenshot
+### Health Check
 
-Request body:
-```json
+```http
+GET /health
+```
+
+Returns server status and version information.
+
+### Take Screenshot
+
+```http
+POST /screenshot
+Content-Type: application/json
+
 {
-  "url": "https://example.com",    // Required: URL to screenshot
-  "returnUrl": false,              // Optional: Return URL instead of binary (default: false)
-  "ttl": 3600,                     // Optional: Cache TTL in seconds (default: 3600)
-  "waitTime": 1000                 // Optional: Extra wait time in milliseconds before taking screenshot (default: 0, max: 10000)
+  "url": "https://example.com",
+  "device": "desktop",           // optional: desktop, tablet, phone
+  "width": 1024,                // optional: custom width
+  "height": 768,                // optional: custom height
+  "format": "png",              // optional: png, jpg, gif
+  "quality": 80,                // optional: 0-100 (for jpg)
+  "scale": 2,                   // optional: for high-DPI (1-5)
+  "fullPage": true,             // optional: capture full page
+  "delay": 1000,                // optional: wait before capture (0-10000ms)
+  "fresh": false,               // optional: bypass cache
+  "returnUrl": false,           // optional: return cache URL instead of image
+  "clickSelectors": ["#menu"],  // optional: click elements before capture
+  "hideSelectors": [".ads"],    // optional: hide elements
+  "selector": ".content",       // optional: capture specific element
+  "crop": {                     // optional: crop screenshot
+    "x": 0,
+    "y": 0,
+    "width": 100,
+    "height": 100
+  }
 }
 ```
 
-Responses:
+## Testing
 
-1. Binary Response (returnUrl: false):
-   - Content-Type: image/png
-   - Body: Binary image data
-
-2. URL Response (returnUrl: true):
-   ```json
-   {
-     "url": "/cache/[filename].png"
-   }
-   ```
-
-Error responses:
-- 400: URL is required
-- 500: Screenshot failed
-
-### Caching
-
-- Screenshots are cached by default for 1 hour (3600 seconds)
-- Custom TTL can be set per request using the `ttl` parameter
-- Cache is cleared on server startup
-- Expired cache files are automatically cleaned up hourly
-- Cache persists across container restarts using Docker volume
-
-### Testing
-
-The repository includes a test script that can verify both basic functionality and caching:
+Run all tests:
 
 ```bash
-# Test basic screenshot
-./test.sh
-
-# Test caching with 5-second TTL
-./test.sh cache
+npm test
 ```
 
-### Docker Commands
+Watch mode for development:
 
-View cached files:
 ```bash
-docker exec screenshot-service ls -la /app/cache
+npm run test:watch
 ```
 
-Stop and remove container:
+Generate coverage report:
+
 ```bash
-docker stop screenshot-service
-docker rm screenshot-service
+npm run test:coverage
 ```
 
-Clean start (rebuilds image, removes old container, starts fresh):
+### Test Structure
+
+- `__tests__/api/health.test.js`: Health endpoint tests
+- `__tests__/api/screenshot.test.js`: Screenshot endpoint tests covering:
+  - Basic functionality
+  - Device emulation
+  - Format and quality options
+  - Dimensions and cropping
+  - Element interaction
+  - Caching behavior
+  - Error handling
+
+## Docker
+
+Build the image:
+
 ```bash
-docker build -t screenshot-api .
-docker stop screenshot-service
-docker rm screenshot-service
-docker run -d \
-  -p 3000:3000 \
-  -v screenshot-cache:/app/cache \
-  --name screenshot-service \
-  screenshot-api
+docker build -t screenshot-service .
 ```
 
-## TODO
+Run the container:
 
-Screenshot Configuration Options:
+```bash
+docker run -p 3000:3000 screenshot-service
+```
 
-1. Basic Settings:
-- [x] URL input for specifying the web page to capture
-- [ ] Device selection (desktop, phone, tablet) for device-specific screenshots
-- [ ] Dimension control with width x height format (default 1024x768) and a full-length screenshot option
-- [ ] Format selection between jpg, png, and gif
+With Docker Compose:
 
-2. Cache Management:
-- [ ] Cache limit setting in days (default 14 days)
-- [ ] Option to force "Always fresh screenshot"
-- [x] Delay timer ranging from 0 to 10000ms for handling animations and lazy loading
+```bash
+docker-compose up
+```
 
-3. Visual Quality and Display:
-- [ ] Zoom level control for high-resolution captures, with support for retina-like screenshots (200+ recommended)
-- [ ] Dimension control for specifying screenshot size
-- [ ] Crop functionality using x,y,width,height coordinates
+## License
 
-4. Element and Content Control:
-- [ ] Click functionality to interact with elements before capture (using CSS selectors)
-- [ ] Hide option to remove specific elements from the screenshot
-- [ ] Selector parameter to capture specific DOM elements
-- [ ] Crop parameter for capturing selected regions
-
-5. Request Header Customization:
-- [ ] Cookie management for setting Cookie request headers
-- [ ] Accept-Language header configuration
-- [x] User-Agent header customization (default provided, custom not yet supported)
+MIT

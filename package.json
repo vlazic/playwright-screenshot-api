@@ -1,11 +1,40 @@
 {
-  "name": "screenshot-api",
+  "name": "playwright-page-screenshot-docker",
   "version": "1.0.0",
   "type": "module",
+  "description": "A service for capturing website screenshots with various options",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage"
+  },
   "dependencies": {
-    "express": "^4.21.2",
-    "playwright": "^1.49.1",
+    "express": "^4.18.2",
     "node-cache": "^5.1.2",
+    "playwright": "^1.41.2",
     "uuid": "^9.0.1"
-  }
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.3",
+    "supertest": "^6.3.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vlazic/playwright-page-screenshot-docker.git"
+  },
+  "keywords": [
+    "screenshot",
+    "playwright",
+    "docker",
+    "express"
+  ],
+  "author": "Vladan Lazic",
+  "license": "MIT"
 }
