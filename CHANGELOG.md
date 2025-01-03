@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/vlazic/playwright-screenshot-api/compare/v2.1.0...v2.2.0) (2025-01-03)
+
+
+### Features
+
+* add GitHub Actions workflow for Docker build and push ([7bbd041](https://github.com/vlazic/playwright-screenshot-api/commit/7bbd0410b26791716270a0cc6abaaf5b5c0be50c))
+* add logging middleware to log requests in Apache-like format ([d03b589](https://github.com/vlazic/playwright-screenshot-api/commit/d03b58958ab30869d16bedc81e55c954aa0cf51e))
+
+
+### Bug Fixes
+
+* update tests to use relative paths for screenshots ([5eb3788](https://github.com/vlazic/playwright-screenshot-api/commit/5eb37886157417d0986e4d3ff9f781e737e70d0f))
+
 ## [2.1.0](https://github.com/vlazic/playwright-screenshot-api/compare/v2.0.0...v2.1.0) (2025-01-03)
 
 
