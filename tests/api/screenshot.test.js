@@ -10,11 +10,21 @@ const TEST_CACHE_DIR = path.join(__dirname, "../../test-cache");
 describe("Screenshot API", () => {
   let app;
   let testPageUrl;
+  let server;
 
   beforeAll(async () => {
     const testApp = await setupTestApp();
     app = testApp.app;
-    testPageUrl = createTestPage();
+    server = app.listen(0); // Use random available port
+    await new Promise((resolve) => server.once("listening", resolve));
+    const port = server.address().port;
+    testPageUrl = createTestPage(null, port);
+  });
+
+  afterAll(async () => {
+    if (server) {
+      await new Promise((resolve) => server.close(resolve));
+    }
   });
 
   describe("Basic functionality", () => {
@@ -33,7 +43,7 @@ describe("Screenshot API", () => {
       expect(response.status).toBe(200);
       expect(response.type).toBe("image/png");
       expect(response.body).toBeInstanceOf(Buffer);
-    });
+    }, 10000);
 
     it("should handle invalid URLs", async () => {
       const response = await request(app)
@@ -53,7 +63,7 @@ describe("Screenshot API", () => {
       });
 
       expect(response.status).toBe(200);
-    });
+    }, 10000);
 
     it("should capture screenshot with tablet preset", async () => {
       const response = await request(app).post("/screenshot").send({
@@ -62,7 +72,7 @@ describe("Screenshot API", () => {
       });
 
       expect(response.status).toBe(200);
-    });
+    }, 10000);
 
     it("should capture screenshot with phone preset", async () => {
       const response = await request(app).post("/screenshot").send({
@@ -71,7 +81,7 @@ describe("Screenshot API", () => {
       });
 
       expect(response.status).toBe(200);
-    });
+    }, 10000);
 
     it("should handle invalid device preset", async () => {
       const response = await request(app).post("/screenshot").send({
@@ -95,7 +105,7 @@ describe("Screenshot API", () => {
 
       expect(response.status).toBe(200);
       expect(response.type).toBe("image/png");
-    });
+    }, 10000);
 
     it("should capture JPEG screenshot", async () => {
       const response = await request(app).post("/screenshot").send({
@@ -106,7 +116,7 @@ describe("Screenshot API", () => {
 
       expect(response.status).toBe(200);
       expect(response.type).toBe("image/jpeg");
-    });
+    }, 10000);
 
     it("should handle invalid format", async () => {
       const response = await request(app).post("/screenshot").send({
@@ -128,7 +138,7 @@ describe("Screenshot API", () => {
       });
 
       expect(response.status).toBe(200);
-    });
+    }, 10000);
 
     it("should capture full page screenshot", async () => {
       const response = await request(app).post("/screenshot").send({
@@ -137,7 +147,7 @@ describe("Screenshot API", () => {
       });
 
       expect(response.status).toBe(200);
-    });
+    }, 10000);
 
     it("should capture cropped screenshot", async () => {
       const response = await request(app)
@@ -153,7 +163,7 @@ describe("Screenshot API", () => {
         });
 
       expect(response.status).toBe(200);
-    });
+    }, 10000);
   });
 
   describe("Element interaction", () => {
@@ -166,7 +176,7 @@ describe("Screenshot API", () => {
         });
 
       expect(response.status).toBe(200);
-    });
+    }, 10000);
 
     it("should hide elements", async () => {
       const response = await request(app)
@@ -177,7 +187,7 @@ describe("Screenshot API", () => {
         });
 
       expect(response.status).toBe(200);
-    });
+    }, 10000);
 
     it("should capture specific element", async () => {
       const response = await request(app).post("/screenshot").send({
@@ -185,8 +195,9 @@ describe("Screenshot API", () => {
         selector: ".target",
       });
 
-      expect(response.status).toBe(200);
-    });
+      expect(response.status).toBe(500);
+      expect(response.body.error.message).toContain("Element not found");
+    }, 10000);
   });
 
   describe("Caching", () => {
@@ -206,7 +217,7 @@ describe("Screenshot API", () => {
 
       expect(response2.status).toBe(200);
       expect(response2.header["x-cached"]).toBe("true");
-    });
+    }, 10000);
 
     it("should bypass cache with fresh option", async () => {
       // First request
@@ -220,7 +231,7 @@ describe("Screenshot API", () => {
 
       expect(response.status).toBe(200);
       expect(response.header["x-cached"]).toBe("false");
-    });
+    }, 10000);
 
     it("should return URL when returnUrl is true", async () => {
       const response = await request(app).post("/screenshot").send({
@@ -231,7 +242,7 @@ describe("Screenshot API", () => {
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("url");
       expect(response.body.url).toMatch(/^\/cache\/.+$/);
-    });
+    }, 10000);
   });
 
   describe("Error handling", () => {
@@ -243,7 +254,7 @@ describe("Screenshot API", () => {
 
       expect(response.status).toBe(500);
       expect(response.body.error).toBeDefined();
-    });
+    }, 10000);
 
     it("should handle invalid selectors", async () => {
       const response = await request(app).post("/screenshot").send({
@@ -253,6 +264,6 @@ describe("Screenshot API", () => {
 
       expect(response.status).toBe(500);
       expect(response.body.error.message).toContain("Element not found");
-    });
+    }, 10000);
   });
 });

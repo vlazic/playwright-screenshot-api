@@ -64,11 +64,3 @@ case $test_mode in
     ;;
 esac
 
-
-
-https://screenshot.app.vlazic.com
-
-
- curl -s -X POST https://screenshot.app.vlazic.com/screenshot \
-      -H "Content-Type: application/json" \
-      -d '{"url":"https://www.birdeye.so/tv-widget/2z1p8xCEjRzpBHjXWrx4tJnz7BFL6z7NnvbCxH7bpump?chain=solana&viewMode=pair&chartInterval=60&chartType=Candle&chartTimezone=Europe%2FBelgrade&chartLeftToolbar=hide&theme=dark"}'

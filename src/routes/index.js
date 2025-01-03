@@ -1,4 +1,5 @@
 import express from "express";
+import path from "path";
 import { healthHandler } from "./handlers/health.js";
 import {
   createScreenshotHandler,
@@ -18,6 +19,13 @@ export const createRouter = (services) => {
   router.get("/health", (req, res) => {
     res.json(healthHandler());
   });
+
+  // Test page endpoint (only in test environment)
+  if (process.env.NODE_ENV === "test") {
+    router.get("/test-page", (req, res) => {
+      res.sendFile(path.join(process.cwd(), "test-cache", "test.html"));
+    });
+  }
 
   // Screenshot endpoint
   router.post("/screenshot", async (req, res, next) => {

@@ -1,13 +1,25 @@
 import { createScreenshotConfig } from "../../config/index.js";
+import { ConfigurationError } from "../../config/index.js";
 
 /**
  * Screenshot request validation error
  */
 class ValidationError extends Error {
-  constructor(message) {
+  constructor({ message, status = 400 }) {
     super(message);
     this.name = "ValidationError";
-    this.status = 400;
+    this.status = status;
+  }
+}
+
+/**
+ * Screenshot error class
+ */
+class ScreenshotError extends Error {
+  constructor({ message, status = 500 }) {
+    super(message);
+    this.name = "ScreenshotError";
+    this.status = status;
   }
 }
 
@@ -18,13 +30,19 @@ class ValidationError extends Error {
  */
 const validateRequest = (params) => {
   if (!params.url) {
-    throw new ValidationError("URL is required");
+    throw new ValidationError({
+      message: "URL is required",
+      status: 400,
+    });
   }
 
   try {
     new URL(params.url);
   } catch {
-    throw new ValidationError("Invalid URL format");
+    throw new ValidationError({
+      message: "Invalid URL format",
+      status: 400,
+    });
   }
 
   // Validate crop parameters if provided
@@ -38,19 +56,27 @@ const validateRequest = (params) => {
       width <= 0 ||
       height <= 0
     ) {
-      throw new ValidationError(
-        "Crop parameters must be numbers and dimensions must be positive"
-      );
+      throw new ValidationError({
+        message:
+          "Crop parameters must be numbers and dimensions must be positive",
+        status: 400,
+      });
     }
   }
 
   // Validate selectors if provided
   if (params.clickSelectors && !Array.isArray(params.clickSelectors)) {
-    throw new ValidationError("clickSelectors must be an array");
+    throw new ValidationError({
+      message: "clickSelectors must be an array",
+      status: 400,
+    });
   }
 
   if (params.hideSelectors && !Array.isArray(params.hideSelectors)) {
-    throw new ValidationError("hideSelectors must be an array");
+    throw new ValidationError({
+      message: "hideSelectors must be an array",
+      status: 400,
+    });
   }
 
   // Validate delay
@@ -60,7 +86,10 @@ const validateRequest = (params) => {
       params.delay < 0 ||
       params.delay > 10000)
   ) {
-    throw new ValidationError("delay must be a number between 0 and 10000");
+    throw new ValidationError({
+      message: "delay must be a number between 0 and 10000",
+      status: 400,
+    });
   }
 };
 
@@ -85,7 +114,7 @@ export const createScreenshotHandler = ({ browserService, cacheService }) => {
       if (cached) {
         return {
           data: cached,
-          cached: true,
+          cached: "true",
           format: params.format || "png",
         };
       }
@@ -93,14 +122,30 @@ export const createScreenshotHandler = ({ browserService, cacheService }) => {
 
     // Take new screenshot
     const screenshotConfig = createScreenshotConfig(params);
-    const screenshot = await browserService.takeScreenshot(params.url, {
-      ...screenshotConfig,
-      delay: params.delay,
-      clickSelectors: params.clickSelectors,
-      hideSelectors: params.hideSelectors,
-      selector: params.selector,
-      crop: params.crop,
-    });
+    let screenshot;
+    try {
+      screenshot = await browserService.takeScreenshot(params.url, {
+        ...screenshotConfig,
+        delay: params.delay,
+        clickSelectors: params.clickSelectors,
+        hideSelectors: params.hideSelectors,
+        selector: params.selector,
+        crop: params.crop,
+      });
+    } catch (error) {
+      // Handle element not found errors
+      if (error.message.includes("Element not found")) {
+        throw new ScreenshotError({
+          message: error.message,
+          status: 500,
+        });
+      }
+      // Handle other screenshot errors
+      throw new ScreenshotError({
+        message: error.message,
+        status: 500,
+      });
+    }
 
     // Cache the result if caching is enabled
     if (cacheService && !params.fresh) {
@@ -109,7 +154,7 @@ export const createScreenshotHandler = ({ browserService, cacheService }) => {
 
     return {
       data: screenshot,
-      cached: false,
+      cached: "false",
       format: params.format || "png",
     };
   };
@@ -120,10 +165,21 @@ export const createScreenshotHandler = ({ browserService, cacheService }) => {
  * @param {Error} error
  * @returns {Object}
  */
-export const createErrorResponse = (error) => ({
-  error: {
-    message: error.message,
-    status: error.status || 500,
-    name: error.name,
-  },
-});
+export const createErrorResponse = (error) => {
+  let status = 500;
+  if (error instanceof ValidationError) {
+    status = 400;
+  } else if (error instanceof ConfigurationError) {
+    status = 400;
+  } else if (error instanceof ScreenshotError) {
+    status = 500;
+  }
+
+  return {
+    error: {
+      message: error.message,
+      status: error.status || status,
+      name: error.name,
+    },
+  };
+};

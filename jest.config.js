@@ -4,8 +4,13 @@ export default {
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
-  testMatch: ["**/__tests__/**/*.test.js"],
-  setupFilesAfterEnv: ["./__tests__/setup.js"],
-  coveragePathIgnorePatterns: ["/node_modules/", "/__tests__/", "/coverage/"],
+  testMatch: ["**/tests/**/*.test.js"],
+  setupFilesAfterEnv: ["./tests/setup.js"],
+  coveragePathIgnorePatterns: ["/node_modules/", "/tests/", "/coverage/"],
   verbose: true,
+  testEnvironmentOptions: {
+    env: {
+      NODE_ENV: "test",
+    },
+  },
 };

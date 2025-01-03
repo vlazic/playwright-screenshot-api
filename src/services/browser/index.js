@@ -2,6 +2,7 @@ import playwright from "playwright";
 import {
   createBrowserConfig,
   createScreenshotConfig,
+  defaults,
 } from "../../config/index.js";
 
 /**
@@ -19,14 +20,15 @@ export const createBrowserService = async (options = {}) => {
    * @returns {Promise<import('playwright').BrowserContext>}
    */
   const createContext = async (contextOptions = {}) => {
-    const screenshotConfig = createScreenshotConfig(contextOptions);
+    const config = createScreenshotConfig(contextOptions);
+    const viewport = {
+      width: config.width || defaults.screenshot.defaultWidth,
+      height: config.height || defaults.screenshot.defaultHeight,
+    };
 
     return browser.newContext({
-      viewport: {
-        width: screenshotConfig.width,
-        height: screenshotConfig.height,
-      },
-      deviceScaleFactor: screenshotConfig.scale,
+      viewport,
+      deviceScaleFactor: config.scale || 1,
       userAgent: contextOptions.userAgent || browserConfig.userAgent,
       acceptDownloads: false,
       bypassCSP: true,
@@ -69,7 +71,12 @@ export const createBrowserService = async (options = {}) => {
       if (options.clickSelectors) {
         for (const selector of options.clickSelectors) {
           try {
-            await page.click(selector, { timeout: 5000 });
+            // Wait for element to be visible and clickable
+            await page.waitForSelector(selector, {
+              state: "visible",
+              timeout: 5000,
+            });
+            await page.click(selector);
             // Wait for any animations or content changes
             await page.waitForTimeout(500);
           } catch (error) {
@@ -80,6 +87,17 @@ export const createBrowserService = async (options = {}) => {
 
       // Handle element hiding
       if (options.hideSelectors) {
+        for (const selector of options.hideSelectors) {
+          try {
+            await page.waitForSelector(selector, {
+              state: "visible",
+              timeout: 2000,
+            });
+          } catch {
+            // Element not found, skip hiding
+            continue;
+          }
+        }
         await page.addStyleTag({
           content: options.hideSelectors
             .map((selector) => `${selector} { display: none !important; }`)
@@ -87,39 +105,66 @@ export const createBrowserService = async (options = {}) => {
         });
       }
 
-      // Handle specific element capture
-      if (options.selector) {
-        const element = await page.$(options.selector);
-        if (!element) {
-          throw new Error(`Element not found: ${options.selector}`);
+      let screenshot;
+      try {
+        // Handle specific element capture
+        if (options.selector) {
+          try {
+            const element = await page.waitForSelector(options.selector, {
+              state: "visible",
+              timeout: 5000,
+            });
+            if (!element) {
+              throw new Error(`Element not found: ${options.selector}`);
+            }
+          } catch (error) {
+            // Convert timeout errors to element not found errors
+            if (error.message.includes("Timeout")) {
+              throw new Error(`Element not found: ${options.selector}`);
+            }
+            throw error;
+          }
+          const screenshotOptions = {
+            type: options.format || "png",
+            timeout: 5000,
+          };
+          if (options.format === "jpeg" && options.quality !== undefined) {
+            screenshotOptions.quality = options.quality;
+          }
+          screenshot = await element.screenshot(screenshotOptions);
         }
-        return element.screenshot({
-          type: options.format || "png",
-          quality: options.quality,
-        });
+        // Handle cropping
+        else if (options.crop) {
+          const { x, y, width, height } = options.crop;
+          const screenshotOptions = {
+            type: options.format || "png",
+            clip: {
+              x: Number(x),
+              y: Number(y),
+              width: Number(width),
+              height: Number(height),
+            },
+          };
+          if (options.format === "jpeg" && options.quality !== undefined) {
+            screenshotOptions.quality = options.quality;
+          }
+          screenshot = await page.screenshot(screenshotOptions);
+        }
+        // Take full screenshot
+        else {
+          const screenshotOptions = {
+            type: options.format || "png",
+            fullPage: options.fullPage,
+          };
+          if (options.format === "jpeg" && options.quality !== undefined) {
+            screenshotOptions.quality = options.quality;
+          }
+          screenshot = await page.screenshot(screenshotOptions);
+        }
+        return screenshot;
+      } catch (error) {
+        throw new Error(`Screenshot failed: ${error.message}`);
       }
-
-      // Handle cropping
-      if (options.crop) {
-        const { x, y, width, height } = options.crop;
-        return page.screenshot({
-          type: options.format || "png",
-          quality: options.quality,
-          clip: {
-            x: Number(x),
-            y: Number(y),
-            width: Number(width),
-            height: Number(height),
-          },
-        });
-      }
-
-      // Take full screenshot
-      return page.screenshot({
-        type: options.format || "png",
-        quality: options.quality,
-        fullPage: options.fullPage,
-      });
     } finally {
       await context.close();
     }

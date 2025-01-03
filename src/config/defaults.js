@@ -4,7 +4,7 @@
 export const defaults = {
   // Device presets
   devices: {
-    desktop: { width: 1280, height: 800 },
+    desktop: { width: 1280, height: 720 },
     tablet: { width: 768, height: 1024 },
     phone: { width: 375, height: 667 },
   },

@@ -7,20 +7,25 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
-    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage"
+    "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
+    "docker:prod": "docker compose up --build",
+    "test:api": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:api:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:api:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test:manual:visual": "bats tests/visual/screenshot.bats",
+    "test:manual:cache": "bash tests/manual/cache-test.sh"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^4.21.2",
     "node-cache": "^5.1.2",
-    "playwright": "^1.41.2",
-    "uuid": "^9.0.1"
+    "playwright": "^1.49.1",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
+    "bats": "^1.11.1",
     "jest": "^29.7.0",
-    "nodemon": "^3.0.3",
-    "supertest": "^6.3.4"
+    "nodemon": "^3.1.9",
+    "supertest": "^7.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -35,6 +40,13 @@
     "docker",
     "express"
   ],
-  "author": "Vladan Lazic",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vlazic/playwright-page-screenshot-docker/issues"
+  },
+  "homepage": "https://github.com/vlazic/playwright-page-screenshot-docker#readme",
+  "directories": {
+    "test": "tests"
+  },
+  "author": "Vladimir Lazić <contact@vlazic.com> (https://vlazic.com/)"
 }

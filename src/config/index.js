@@ -11,10 +11,11 @@ import {
 /**
  * Configuration error class
  */
-class ConfigurationError extends Error {
+export class ConfigurationError extends Error {
   constructor(message) {
     super(message);
     this.name = "ConfigurationError";
+    this.status = 400;
   }
 }
 
