@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { createBrowserService } from "./services/browser/index.js";
 import { createCacheService } from "./services/cache/index.js";
 import { createRouter, configureCacheServing } from "./routes/index.js";
+import { createLoggingMiddleware } from "./services/logging/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -35,6 +36,7 @@ export const createApp = (services) => {
   const app = express();
 
   // Middleware
+  app.use(createLoggingMiddleware());
   app.use(express.json());
 
   // Configure cache directory serving
