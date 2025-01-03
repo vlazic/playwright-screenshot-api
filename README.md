@@ -12,25 +12,21 @@ A service for capturing website screenshots with various options, built with Nod
 - Crop functionality
 - Custom request headers
 
-## Installation
+## Quick Start with Docker
+
+Pre-built Docker images are available on GitHub Container Registry:
 
 ```bash
-npm install
+# Pull the latest version
+docker pull ghcr.io/vlazic/playwright-screenshot-docker:latest
+
+# Run the container
+docker run -p 3000:3000 ghcr.io/vlazic/playwright-screenshot-docker:latest
 ```
 
-## Usage
+### Platform Support
 
-Start the server:
-
-```bash
-npm start
-```
-
-Development mode with auto-reload:
-
-```bash
-npm run dev
-```
+Images are available for both x86_64/amd64 and ARM64/aarch64 architectures. Docker will automatically pull the correct image for your platform.
 
 ## API
 
@@ -65,7 +61,7 @@ POST /screenshot
 Content-Type: application/json
 
 {
-  "url": "https://example.com",
+  "url": "https://vlazic.com",
   "device": "desktop",
   "width": 1024,
   "height": 768,
@@ -88,30 +84,76 @@ Content-Type: application/json
 }
 ```
 
-## Testing
+## Development
 
-Run all tests:
-
-```bash
-npm test
-```
-
-Watch mode for development:
+### Installation
 
 ```bash
-npm run test:watch
+npm install
 ```
 
-Generate coverage report:
+### Local Development
+
+Start the server:
 
 ```bash
-npm run test:coverage
+npm start
 ```
 
-### Test Structure
+Development mode with auto-reload:
 
-- `__tests__/api/health.test.js`: Health endpoint tests
-- `__tests__/api/screenshot.test.js`: Screenshot endpoint tests covering:
+```bash
+npm run dev
+```
+
+### Docker Development
+
+Build and run locally with Docker Compose:
+
+```bash
+# Development mode with hot-reload
+npm run docker:dev
+
+# Production mode
+npm run docker:prod
+```
+
+Build manually:
+
+```bash
+docker build -t playwright-screenshot-api .
+docker run -p 3000:3000 playwright-screenshot-api
+```
+
+### Testing
+
+#### API Tests
+
+```bash
+# Run API tests
+npm run test:api
+
+# Watch mode for development
+npm run test:api:watch
+
+# Generate coverage report
+npm run test:api:coverage
+```
+
+#### Manual Tests
+
+```bash
+# Visual regression tests
+npm run test:manual:visual
+
+# Cache functionality tests
+npm run test:manual:cache
+```
+
+#### Test Structure
+
+- `tests/api/health.test.js`: Health endpoint tests
+- `tests/api/screenshot.test.js`: Screenshot endpoint tests covering:
   - Basic functionality
   - Device emulation
   - Format and quality options
@@ -120,25 +162,16 @@ npm run test:coverage
   - Caching behavior
   - Error handling
 
-## Docker
+### Docker Build Automation
 
-Build the image:
+Images are automatically built and published to GitHub Container Registry on:
+- Push to master branch
+- New version tags
+- Pull requests (build only, not published)
 
-```bash
-docker build -t playwright-screenshot-api .
-```
-
-Run the container:
-
-```bash
-docker run -p 3000:3000 playwright-screenshot-api
-```
-
-With Docker Compose:
-
-```bash
-docker-compose up
-```
+The build process creates multi-architecture images supporting:
+- Linux x86_64/amd64
+- Linux ARM64/aarch64
 
 ## License
 
