@@ -33,9 +33,21 @@ export const createRouter = (services) => {
       const result = await screenshotHandler(req.body);
 
       if (req.body.returnUrl) {
-        // Generate and return URL for the cached screenshot
-        const filename = await services.cacheService.generateUrl(result.data);
-        res.json({ url: `/cache/${filename}` });
+        // Generate URL for the screenshot
+        const filename = await services.cacheService.generateUrl(
+          req.body,
+          result.data
+        );
+
+        if (filename) {
+          // Return URL for cached screenshot
+          res.json({ url: `/cache/${filename}` });
+        } else {
+          // For fresh screenshots, send data directly
+          res.set("Content-Type", `image/${result.format}`);
+          res.set("X-Cached", "false");
+          res.send(result.data);
+        }
       } else {
         // Send screenshot directly
         res.set("Content-Type", `image/${result.format}`);

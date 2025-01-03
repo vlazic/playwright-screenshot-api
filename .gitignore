@@ -4,5 +4,5 @@ node_modules/
 cache/
 
 # Ignore the test results
-tests/manual/screenshot.png
+tests/manual/*.png
 tests/visual/screenshots/

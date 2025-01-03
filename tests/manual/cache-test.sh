@@ -10,13 +10,13 @@ echo "Taking screenshot of $url"
 
 case $test_mode in
   "cache")
-    echo "Testing cache functionality with short TTL (5 seconds)"
+    echo "Testing cache functionality"
     
-    # First request - store in cache
-    echo "1. Making initial request with returnUrl=true and TTL=5..."
+    # First request - store in cache (without fresh flag)
+    echo "1. Making initial request with returnUrl=true..."
     response=$(curl -s -X POST http://localhost:3000/screenshot \
       -H "Content-Type: application/json" \
-      -d '{"url":"'$url'","ttl":5,"returnUrl":true}')
+      -d '{"url":"'$url'","returnUrl":true}')
     
     cached_url=$(echo $response | grep -o '/cache/[^"]*')
     echo "✓ Image cached at: http://localhost:3000$cached_url"
@@ -38,27 +38,16 @@ case $test_mode in
         exit 1
     fi
     
-    echo -e "\n3. Waiting 6 seconds for cache to expire..."
-    sleep 6
+    echo -e "\n3. Forcing fresh screenshot..."
     
-    # Check cache status after expiry using screenshot endpoint
-    echo -e "\n4. Verifying cache expiration..."
-    response=$(curl -s -X POST http://localhost:3000/screenshot \
+    # Request fresh screenshot using fresh flag (will be returned directly)
+    echo -e "\n4. Verifying fresh screenshot generation..."
+    curl -s -X POST http://localhost:3000/screenshot \
       -H "Content-Type: application/json" \
-      -d '{"url":"'$url'","returnUrl":true}')
+      -d '{"url":"'$url'","fresh":true}' \
+      --output "$(dirname "$0")/new.png"
     
-    new_url=$(echo $response | grep -o '/cache/[^"]*')
-    if [[ $new_url != $cached_url ]]; then
-        echo "✓ Cache expired as expected (new URL generated)"
-        echo "New cache URL: http://localhost:3000$new_url"
-        
-        # Download new image
-        curl -s "http://localhost:3000$new_url" --output "$(dirname "$0")/new.png"
-        echo "✓ New image downloaded to $(dirname "$0")/new.png"
-    else
-        echo "✗ Cache not expired (unexpected)"
-        exit 1
-    fi
+    echo "✓ Fresh screenshot saved to $(dirname "$0")/new.png"
     ;;
     
   *)

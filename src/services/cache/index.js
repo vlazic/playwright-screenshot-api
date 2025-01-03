@@ -138,13 +138,32 @@ export const createCacheService = (options = {}) => {
 
   /**
    * Generate URL for cached screenshot
-   * @param {Buffer} data
+   * @param {Object} params Request parameters
+   * @param {Buffer} data Screenshot data
    * @returns {Promise<string>}
    */
-  const generateUrl = async (data) => {
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.png`;
+  const generateUrl = async (params, data) => {
+    // Don't cache fresh screenshots
+    if (params.fresh) {
+      return null;
+    }
+
+    // For cached screenshots, use consistent filename based on params
+    const key = createCacheKey(params);
+    const filename = `${key}.${params.format || "png"}`;
     const filepath = path.join(cacheDir, filename);
-    await fs.promises.writeFile(filepath, data);
+
+    // Check if file exists
+    const exists = await fs.promises
+      .access(filepath)
+      .then(() => true)
+      .catch(() => false);
+
+    if (!exists) {
+      await fs.promises.writeFile(filepath, data);
+      cache.set(key, createCacheEntry(filename));
+    }
+
     return filename;
   };
 
