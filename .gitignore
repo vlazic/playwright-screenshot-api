@@ -1,4 +1,8 @@
-node_modules
-screenshot.png
-screenshots/
+node_modules/
+
+# Ignore the cache
 cache/
+
+# Ignore the test results
+tests/manual/screenshot.png
+tests/visual/screenshots/

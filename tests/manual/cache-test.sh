@@ -21,6 +21,10 @@ case $test_mode in
     cached_url=$(echo $response | grep -o '/cache/[^"]*')
     echo "✓ Image cached at: http://localhost:3000$cached_url"
     
+    # Download cached image
+    curl -s "http://localhost:3000$cached_url" --output "$(dirname "$0")/cached.png"
+    echo "✓ Cached image downloaded to $(dirname "$0")/cached.png"
+    
     # Download and check the image from cache using screenshot endpoint
     echo -e "\n2. Verifying cache hit..."
     response=$(curl -s -X POST http://localhost:3000/screenshot \
@@ -47,6 +51,10 @@ case $test_mode in
     if [[ $new_url != $cached_url ]]; then
         echo "✓ Cache expired as expected (new URL generated)"
         echo "New cache URL: http://localhost:3000$new_url"
+        
+        # Download new image
+        curl -s "http://localhost:3000$new_url" --output "$(dirname "$0")/new.png"
+        echo "✓ New image downloaded to $(dirname "$0")/new.png"
     else
         echo "✗ Cache not expired (unexpected)"
         exit 1
@@ -58,9 +66,8 @@ case $test_mode in
     curl -s -X POST http://localhost:3000/screenshot \
       -H "Content-Type: application/json" \
       -d '{"url":"'$url'"}' \
-      --output screenshot.png
-    echo "✓ Screenshot saved as screenshot.png"
-    xdg-open screenshot.png
+      --output "$(dirname "$0")/screenshot.png"
+    echo "✓ Screenshot saved as $(dirname "$0")/screenshot.png"
+    xdg-open "$(dirname "$0")/screenshot.png"
     ;;
 esac
-
