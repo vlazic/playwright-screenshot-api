@@ -18,10 +18,10 @@ Pre-built Docker images are available on GitHub Container Registry:
 
 ```bash
 # Pull the latest version
-docker pull ghcr.io/vlazic/playwright-screenshot-docker:latest
+docker pull ghcr.io/vlazic/playwright-screenshot-api:latest
 
 # Run the container
-docker run -p 3000:3000 ghcr.io/vlazic/playwright-screenshot-docker:latest
+docker run -p 3000:3000 ghcr.io/vlazic/playwright-screenshot-api:latest
 ```
 
 ### Platform Support
