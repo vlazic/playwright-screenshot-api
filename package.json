@@ -1,0 +1,11 @@
+{
+  "name": "screenshot-api",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.21.2",
+    "playwright": "^1.49.1",
+    "node-cache": "^5.1.2",
+    "uuid": "^9.0.1"
+  }
+}
