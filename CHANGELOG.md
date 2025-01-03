@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/vlazic/playwright-screenshot-api/compare/v2.0.0...v2.1.0) (2025-01-03)
+
+
+### Features
+
+* add release script ([bfe8b02](https://github.com/vlazic/playwright-screenshot-api/commit/bfe8b0203805b18c04a33d1e297aff4189de3e82))
+
 ## 2.0.0 (2025-01-03)
 
 
