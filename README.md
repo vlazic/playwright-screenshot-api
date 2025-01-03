@@ -1,4 +1,4 @@
-# Playwright Page Screenshot Docker
+# Playwright Screenshot API
 
 A service for capturing website screenshots with various options, built with Node.js, Express, and Playwright.
 
@@ -44,26 +44,42 @@ Returns server status and version information.
 
 ### Take Screenshot
 
+Available options:
+- `device`: desktop, tablet, phone
+- `width`: custom width
+- `height`: custom height
+- `format`: png, jpg, gif
+- `quality`: 0-100 (for jpg)
+- `scale`: for high-DPI (1-5)
+- `fullPage`: capture full page
+- `delay`: wait before capture (0-10000ms)
+- `fresh`: bypass cache
+- `returnUrl`: return cache URL instead of image
+- `clickSelectors`: click elements before capture
+- `hideSelectors`: hide elements
+- `selector`: capture specific element
+- `crop`: crop screenshot
+
 ```http
 POST /screenshot
 Content-Type: application/json
 
 {
   "url": "https://example.com",
-  "device": "desktop",           // optional: desktop, tablet, phone
-  "width": 1024,                // optional: custom width
-  "height": 768,                // optional: custom height
-  "format": "png",              // optional: png, jpg, gif
-  "quality": 80,                // optional: 0-100 (for jpg)
-  "scale": 2,                   // optional: for high-DPI (1-5)
-  "fullPage": true,             // optional: capture full page
-  "delay": 1000,                // optional: wait before capture (0-10000ms)
-  "fresh": false,               // optional: bypass cache
-  "returnUrl": false,           // optional: return cache URL instead of image
-  "clickSelectors": ["#menu"],  // optional: click elements before capture
-  "hideSelectors": [".ads"],    // optional: hide elements
-  "selector": ".content",       // optional: capture specific element
-  "crop": {                     // optional: crop screenshot
+  "device": "desktop",
+  "width": 1024,
+  "height": 768,
+  "format": "png",
+  "quality": 80,
+  "scale": 2,
+  "fullPage": true,
+  "delay": 1000,
+  "fresh": false,
+  "returnUrl": false,
+  "clickSelectors": ["#menu"],
+  "hideSelectors": [".ads"],
+  "selector": ".content",
+  "crop": {
     "x": 0,
     "y": 0,
     "width": 100,
@@ -109,13 +125,13 @@ npm run test:coverage
 Build the image:
 
 ```bash
-docker build -t screenshot-service .
+docker build -t playwright-screenshot-api .
 ```
 
 Run the container:
 
 ```bash
-docker run -p 3000:3000 screenshot-service
+docker run -p 3000:3000 playwright-screenshot-api
 ```
 
 With Docker Compose:

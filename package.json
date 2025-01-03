@@ -1,5 +1,5 @@
 {
-  "name": "playwright-page-screenshot-docker",
+  "name": "playwright-screenshot-api",
   "version": "2.0.0",
   "type": "module",
   "description": "A service for capturing website screenshots with various options",
@@ -34,7 +34,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vlazic/playwright-page-screenshot-docker.git"
+    "url": "git+https://github.com/vlazic/playwright-screenshot-api.git"
   },
   "keywords": [
     "screenshot",
@@ -44,9 +44,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vlazic/playwright-page-screenshot-docker/issues"
+    "url": "https://github.com/vlazic/playwright-screenshot-api/issues"
   },
-  "homepage": "https://github.com/vlazic/playwright-page-screenshot-docker#readme",
+  "homepage": "https://github.com/vlazic/playwright-screenshot-api#readme",
   "directories": {
     "test": "tests"
   },
