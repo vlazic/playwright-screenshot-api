@@ -68,7 +68,8 @@ Request body:
 {
   "url": "https://example.com",    // Required: URL to screenshot
   "returnUrl": false,              // Optional: Return URL instead of binary (default: false)
-  "ttl": 3600                      // Optional: Cache TTL in seconds (default: 3600)
+  "ttl": 3600,                     // Optional: Cache TTL in seconds (default: 3600)
+  "waitTime": 1000                 // Optional: Extra wait time in milliseconds before taking screenshot (default: 0)
 }
 ```
 
@@ -147,7 +148,7 @@ Screenshot Configuration Options:
 2. Cache Management:
 - [ ] Cache limit setting in days (default 14 days)
 - [ ] Option to force "Always fresh screenshot"
-- [ ] Delay timer ranging from 0 to 10000ms for handling animations and lazy loading
+- [x] Delay timer ranging from 0 to 10000ms for handling animations and lazy loading
 
 3. Visual Quality and Display:
 - [ ] Zoom level control for high-resolution captures, with support for retina-like screenshots (200+ recommended)

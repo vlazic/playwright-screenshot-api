@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 url="https://www.birdeye.so/tv-widget/2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv?chain=solana&viewMode=pair&chartInterval=60&chartType=Candle&chartTimezone=Europe%2FBelgrade&chartLeftToolbar=hide&theme=dark"
+url="https://dexscreener.com/solana/2Li2Rq9tZXT2X737okmkPg2TTYpzbRQnmDMuJ2n4aSXT?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTimeframesToolbar=0&loadChartSettings=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=60"
+url="https://www.birdeye.so/tv-widget/2z1p8xCEjRzpBHjXWrx4tJnz7BFL6z7NnvbCxH7bpump?chain=solana&viewMode=pair&chartInterval=60&chartType=Candle&chartTimezone=Europe%2FBelgrade&chartLeftToolbar=hide&theme=dark"
 
 test_mode=${1:-"normal"} # Default to normal mode if no argument provided
 
@@ -61,3 +63,12 @@ case $test_mode in
     xdg-open screenshot.png
     ;;
 esac
+
+
+
+https://screenshot.app.vlazic.com
+
+
+ curl -s -X POST https://screenshot.app.vlazic.com/screenshot \
+      -H "Content-Type: application/json" \
+      -d '{"url":"https://www.birdeye.so/tv-widget/2z1p8xCEjRzpBHjXWrx4tJnz7BFL6z7NnvbCxH7bpump?chain=solana&viewMode=pair&chartInterval=60&chartType=Candle&chartTimezone=Europe%2FBelgrade&chartLeftToolbar=hide&theme=dark"}'

@@ -40,7 +40,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 const browser = await playwright.chromium.launch();
 
 app.post("/screenshot", async (req, res) => {
-  const { url, ttl, returnUrl = false } = req.body;
+  const { url, ttl, returnUrl = false, waitTime = 0 } = req.body;
 
   if (!url) {
     return res.status(400).json({ error: "URL is required" });
@@ -77,6 +77,11 @@ app.post("/screenshot", async (req, res) => {
         waitUntil: "domcontentloaded",
         timeout: 30000,
       });
+    }
+
+    // Add extra wait time if specified
+    if (waitTime > 0) {
+      await page.waitForTimeout(waitTime);
     }
 
     const screenshot = await page.screenshot();
